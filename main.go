@@ -220,22 +220,3 @@ func main() {
 		}
 	}
 }
-
-/* fmt.Println("Fish")
-re := regexp.MustCompile(`\(([^)]+)\)`) // Регулярное выражение
-matches := re.FindStringSubmatch(line)
-if len(matches) > 1 {
-	values := matches[1]
-	blocks := splitValues(values) // Разбиваем значения на блоки
-	if len(blocks) == 2 {
-		fmt.Println(len(blocks), "Размер")
-		for _, block := range blocks {
-			fmt.Println(block)
-		}
-	} else {
-		fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-	}
-} else {
-	fmt.Println("No parameters found", line)
-}
-*/
