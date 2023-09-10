@@ -1,0 +1,15 @@
+ADDsdaFishsda d(25.11.1655.AA)
+ADD Fish(Adrey, AAA)
+ADD Bird(Akaka Akak, 325)
+ADD Insects(Akaka, 325, 25.08.2002)
+123
+5
+12355
+2
+REM dfhgdghd
+PRINT
+5
+ADD Insects(Akaka, 325, 25.08.2002)
+6
+PRINT
+lox
