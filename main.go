@@ -21,8 +21,8 @@ func checkdate(date string) bool {
 	}
 }
 
-type print interface {
-	PrintContainer() // интерфейс
+type Creature interface {
+	PrintElement() // интерфейс
 }
 
 type Fish struct {
@@ -30,7 +30,7 @@ type Fish struct {
 	areal string
 }
 
-func (a Fish) PrintContainer() {
+func (a Fish) PrintElement() {
 	fmt.Println("Рыба->", "Имя:", a.name, "Место обитания:", a.areal) // Вывод для рыбы
 }
 
@@ -39,7 +39,7 @@ type Bird struct {
 	speed float64
 }
 
-func (a Bird) PrintContainer() {
+func (a Bird) PrintElement() {
 	fmt.Println("Птица->", "Имя:", a.name, "Скорость:", a.speed) // Вывод для птицы
 }
 
@@ -49,8 +49,12 @@ type Insects struct {
 	date string
 }
 
-func (a Insects) PrintContainer() {
+func (a Insects) PrintElement() {
 	fmt.Println("Насекомое->", "Имя:", a.name, "Размер:", a.size, "Дата обнаружения:", a.date) // Вывод для насекомого
+}
+
+func Sound(a Creature) {
+	a.PrintElement()
 }
 
 func splitValues(values string) []string {
@@ -129,7 +133,7 @@ func AddInsects(container *list.List, matches []string, line string) (err bool) 
 }
 
 // Функция добавления
-func ADD(line string, container *list.List) {
+func add(line string, container *list.List) {
 	re := regexp.MustCompile(`\(([^)]+)\)`) // Регулярное выражение
 	matches := re.FindStringSubmatch(line)
 	if strings.Contains(line, "Fish") {
@@ -141,7 +145,8 @@ func ADD(line string, container *list.List) {
 	}
 }
 
-func REM(container *list.List, line string) {
+// Функция удаления
+func rem(container *list.List, line string) {
 	words := strings.SplitN(line, " ", 2) // разбивает строку на подстроки, используя в качестве разделителя пробел (" "). Второй аргумент, 2, указывает на то, что она должна разделить строку не более чем на две подстроки.
 	if len(words) > 1 {
 		result := words[1]
@@ -170,14 +175,11 @@ func REM(container *list.List, line string) {
 	}
 }
 
-func PRINT(container list.List) {
+// Функция вывода
+func print(container list.List) {
 	for e := container.Front(); e != nil; e = e.Next() {
-		if fish, ok := e.Value.(Fish); ok {
-			fish.PrintContainer()
-		} else if bird, ok := e.Value.(Bird); ok {
-			bird.PrintContainer()
-		} else if insects, ok := e.Value.(Insects); ok {
-			insects.PrintContainer()
+		if creature, ok := e.Value.(Creature); ok { // сравниваем является ли значением допустимым значением Fish, Bird, Insects
+			Sound(creature) // В зависимости от типа структуры Fish, Bird, Insects - будет "звук", которые выводит его параметры
 		}
 	}
 }
@@ -221,11 +223,11 @@ func main() {
 
 	for _, line := range lines {
 		if strings.HasPrefix(line, "ADD") {
-			ADD(line, container)
+			add(line, container)
 		} else if strings.HasPrefix(line, "REM") {
-			REM(container, line)
+			rem(container, line)
 		} else if strings.HasPrefix(line, "PRINT") {
-			PRINT(*container)
+			print(*container)
 		}
 	}
 }
