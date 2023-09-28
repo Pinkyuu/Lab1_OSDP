@@ -1,12 +1,7 @@
 ADD Fish(Adrey, AAA)
 ADD Bird(Akaka Akak, 325)
 ADD Insects(Akaka, 325, 25.08.2002)
-123
-5
-12355
-2
-REM Akaka
+ADD Bird(Akaka, 3555)
 PRINT
-5
-6
+REM Akaka
 PRINT
