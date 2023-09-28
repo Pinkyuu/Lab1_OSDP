@@ -59,76 +59,85 @@ func splitValues(values string) []string {
 	return blocks
 }
 
+func AddFish(container *list.List, matches []string, line string) {
+	if len(matches) > 1 {
+		values := matches[1]
+		blocks := splitValues(values) // Разбиваем значения на блоки
+		if len(blocks) == 2 {
+			var a Fish // структура типа Fish
+			a.name = blocks[0]
+			a.areal = blocks[1]
+			container.PushBack(a)
+		} else {
+			fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
+		}
+	}
+}
+
+func AddBird(container *list.List, matches []string, line string) (err bool) {
+	if len(matches) > 1 {
+		values := matches[1]
+		blocks := splitValues(values) // Разбиваем значения на блоки
+		if len(blocks) == 2 {
+			var a Bird // структура типа Bird
+			a.name = blocks[0]
+			if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil {
+				a.speed = StrToFloat
+			} else {
+				panic(err) // если string не конвертировался в float64
+			}
+			container.PushBack(a)
+			return true
+		} else {
+			fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
+			return false
+		}
+	} else {
+		fmt.Println("No parameters found", line)
+		return false
+	}
+}
+
+func AddInsects(container *list.List, matches []string, line string) (err bool) {
+	if len(matches) > 1 {
+		values := matches[1]
+		blocks := splitValues(values) // Разбиваем значения на блоки
+		if len(blocks) == 3 {
+			var a Insects // структура типа Insects
+			a.name = blocks[0]
+			if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil {
+				a.size = StrToFloat
+			} else {
+				panic(err) // если string не конвертировался в float64
+			}
+			if checkdate(blocks[2]) {
+				a.date = blocks[2]
+			} else {
+				fmt.Println("Invalid date")
+				return false
+			}
+			container.PushBack(a)
+			return true
+		} else {
+			fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
+			return false
+		}
+	} else {
+		fmt.Println("No parameters found", line)
+		return false
+	}
+}
+
+// Функция добавления
 func ADD(line string, container *list.List) {
 	re := regexp.MustCompile(`\(([^)]+)\)`) // Регулярное выражение
 	matches := re.FindStringSubmatch(line)
 	if strings.Contains(line, "Fish") {
-		fmt.Println("Fish")
-		if len(matches) > 1 {
-			values := matches[1]
-			blocks := splitValues(values) // Разбиваем значения на блоки
-			if len(blocks) == 2 {
-				var a Fish // структура типа Fish
-				a.name = blocks[0]
-				a.areal = blocks[1]
-				container.PushBack(a)
-			} else {
-				fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-				return
-			}
-		} else {
-			fmt.Println("No parameters found", line)
-			return
-		}
+		AddFish(container, matches, line)
 	} else if strings.Contains(line, "Bird") {
-		fmt.Println("Bird")
-		if len(matches) > 1 {
-			values := matches[1]
-			blocks := splitValues(values) // Разбиваем значения на блоки
-			if len(blocks) == 2 {
-				var a Bird // структура типа Bird
-				a.name = blocks[0]
-				if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil {
-					a.speed = StrToFloat
-				} else {
-					panic(err) // если string не конвертировался в float64
-				}
-				container.PushBack(a)
-			} else {
-				fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-				return
-			}
-		} else {
-			fmt.Println("No parameters found", line)
-		}
+		AddBird(container, matches, line)
 	} else if strings.Contains(line, "Insects") {
-		fmt.Println("Insects")
-		if len(matches) > 1 {
-			values := matches[1]
-			blocks := splitValues(values) // Разбиваем значения на блоки
-			if len(blocks) == 3 {
-				var a Insects // структура типа Insects
-				a.name = blocks[0]
-				if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil {
-					a.size = StrToFloat
-				} else {
-					panic(err) // если string не конвертировался в float64
-				}
-				if checkdate(blocks[2]) {
-					a.date = blocks[2]
-				} else {
-					fmt.Println("Invalid date")
-					return
-				}
-				container.PushBack(a)
-			} else {
-				fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-				return
-			}
-		} else {
-			fmt.Println("No parameters found", line)
-			return
-		}
+		AddInsects(container, matches, line)
 	}
 }
 
