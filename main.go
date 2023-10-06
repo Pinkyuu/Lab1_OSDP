@@ -57,7 +57,7 @@ func Sound(a Creature) {
 	a.PrintElement() // Вывод интерфейса
 }
 
-func StringSplitBlocks(values string) []string { // разбиваем строку (*1*.*2*.*3*) на блоки block[0] = *1*, block[1] = *2*, block[2] = *3*
+func ParametersToBlocks(values string) []string { // разбиваем строку (*1*.*2*.*3*) на блоки block[0] = *1*, block[1] = *2*, block[2] = *3*
 	re := regexp.MustCompile(`\s*,\s*`) // Используем регулярное выражение
 	blocks := re.Split(values, -1)
 	return blocks
@@ -66,9 +66,9 @@ func StringSplitBlocks(values string) []string { // разбиваем стро�
 // Добавление рыбы
 func AddFish(container *list.List, matches []string, line string) {
 	if len(matches) > 1 {
-		values := matches[1]                // параметры переданные в функция для структуры Fish
-		blocks := StringSplitBlocks(values) // Разбиваем значения на блоки
-		if len(blocks) == 2 {               // 1 блок - имя, 2-ой блок - ареал
+		values := matches[1]                 // параметры переданные в функция для структуры Fish
+		blocks := ParametersToBlocks(values) // Разбиваем значения на блоки
+		if len(blocks) == 2 {                // 1 блок - имя, 2-ой блок - ареал
 			var a Fish          // структура типа Fish
 			a.name = blocks[0]  // Записываем 1-ый блок в имя
 			a.areal = blocks[1] // Записываем 2-ой блок в ариал
@@ -82,9 +82,9 @@ func AddFish(container *list.List, matches []string, line string) {
 // Добавление птицы
 func AddBird(container *list.List, matches []string, line string) (err bool) {
 	if len(matches) > 1 {
-		values := matches[1]                // параметры переданные в функция для структуры Bird
-		blocks := StringSplitBlocks(values) // Разбиваем значения на блоки
-		if len(blocks) == 2 {               // 1 блок - имя, 2-ой блок - скорость
+		values := matches[1]                 // параметры переданные в функция для структуры Bird
+		blocks := ParametersToBlocks(values) // Разбиваем значения на блоки
+		if len(blocks) == 2 {                // 1 блок - имя, 2-ой блок - скорость
 			var a Bird                                                            // структура типа Bird
 			a.name = blocks[0]                                                    // Записывается имя из блока
 			if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil { // Конвертация string в float64
@@ -99,7 +99,7 @@ func AddBird(container *list.List, matches []string, line string) (err bool) {
 			return false                                   // Ошибка
 		}
 	} else {
-		fmt.Println("No parameters found", line) // Не найден параметр
+		// fmt.Println("No parameters found", line) // Не найден параметр
 		return false
 	}
 }
@@ -107,9 +107,9 @@ func AddBird(container *list.List, matches []string, line string) (err bool) {
 // Добавление насекомого
 func AddInsects(container *list.List, matches []string, line string) (err bool) {
 	if len(matches) > 1 {
-		values := matches[1]                // параметры переданные в функция для структуры Insects
-		blocks := StringSplitBlocks(values) // Разбиваем значения на блоки
-		if len(blocks) == 3 {               // 1 блок - имя, 2-ой блок - размер, 3 блок - дата обнаружения
+		values := matches[1]                 // параметры переданные в функция для структуры Insects
+		blocks := ParametersToBlocks(values) // Разбиваем значения на блоки
+		if len(blocks) == 3 {                // 1 блок - имя, 2-ой блок - размер, 3 блок - дата обнаружения
 			var a Insects                                                         // структура типа Insects
 			a.name = blocks[0]                                                    // // Записываем 1-ый блок в имя
 			if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil { // Конвертация string в float64

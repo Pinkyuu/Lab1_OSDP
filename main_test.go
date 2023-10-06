@@ -63,7 +63,8 @@ func TestAddBird(t *testing.T) {
 	// Тест 2: добавление птицы с некорректными параметрами
 	line2 := "bird Pigeon"
 	matches2 := regexp.MustCompile(`\(([^)]+)\)`).FindStringSubmatch(line2)
-	if AddBird(birdsList, matches2, line2) {
+	err := AddBird(birdsList, matches2, line2)
+	if err {
 		t.Errorf("Test 2: Expected false, got true")
 	}
 
