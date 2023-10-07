@@ -104,35 +104,36 @@ func AddBird(container *list.List, matches []string, line string) (err bool) {
 	}
 }
 
-// Добавление насекомого
 func AddInsects(container *list.List, matches []string, line string) (err bool) {
-	if len(matches) > 1 {
-		values := matches[1]                 // параметры переданные в функция для структуры Insects
-		blocks := ParametersToBlocks(values) // Разбиваем значения на блоки
-		if len(blocks) == 3 {                // 1 блок - имя, 2-ой блок - размер, 3 блок - дата обнаружения
-			var a Insects                                                         // структура типа Insects
-			a.name = blocks[0]                                                    // // Записываем 1-ый блок в имя
-			if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil { // Конвертация string в float64
-				a.size = StrToFloat // Записываем 2-ой блок в размеры
-			} else {
-				panic(err) // если string не конвертировался в float64
-			}
-			if checkdate(blocks[2]) { // Проверка даты на валидность
-				a.date = blocks[2] // Проверка выдала true
-			} else {
-				fmt.Println("Invalid date") // Проверка выдала false
-				return false
-			}
-			container.PushBack(a) // Добавление в контейнер
-			return true
-		} else {
-			fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-			return false
-		}
-	} else {
-		fmt.Println("No parameters found", line)
+	if len(matches) <= 1 {
+		fmt.Println("No parameters found", line) // exception
 		return false
 	}
+
+	blocks := ParametersToBlocks(matches[1]) // TODO: use standart function
+
+	if len(blocks) != 3 {
+		fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
+		return false
+	}
+	// 1 блок - имя, 2-ой блок - размер, 3 блок - дата обнаружения
+	var a Insects                                                         // структура типа Insects
+	a.name = blocks[0]                                                    // // Записываем 1-ый блок в имя
+	if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil { // Конвертация string в float64
+		a.size = StrToFloat // Записываем 2-ой блок в размеры
+	} else {
+		panic(err) // если string не конвертировался в float64
+	}
+
+	if checkdate(blocks[2]) { //  readDate ... exception
+		a.date = blocks[2]
+	} else {
+		fmt.Println("Invalid date")
+		return false
+	}
+
+	container.PushBack(a)
+	return true
 }
 
 // Функция добавления
