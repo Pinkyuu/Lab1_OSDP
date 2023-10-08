@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"container/list"
+	"errors"
 	"fmt"
 	"math" // mod
 	"os"   // Работа с файлами
@@ -11,15 +12,6 @@ import (
 	"strings" // Работа со строками
 	"time"
 )
-
-func checkdate(date string) bool {
-	t, err := time.Parse("02.01.2006", date)
-	if err != nil {
-		return false
-	} else {
-		return t.Format("02.01.2006") == date
-	}
-}
 
 type Creature interface {
 	PrintElement() // интерфейс
@@ -46,7 +38,7 @@ func (a Bird) PrintElement() {
 type Insects struct {
 	name string
 	size float64
-	date string
+	date time.Time
 }
 
 func (a Insects) PrintElement() {
@@ -57,83 +49,79 @@ func Sound(a Creature) {
 	a.PrintElement() // Вывод интерфейса
 }
 
-func ParametersToBlocks(values string) []string { // разбиваем строку (*1*.*2*.*3*) на блоки block[0] = *1*, block[1] = *2*, block[2] = *3*
-	re := regexp.MustCompile(`\s*,\s*`) // Используем регулярное выражение
-	blocks := re.Split(values, -1)
-	return blocks
-}
-
 // Добавление рыбы
-func AddFish(container *list.List, matches []string, line string) {
-	if len(matches) > 1 {
-		values := matches[1]                 // параметры переданные в функция для структуры Fish
-		blocks := ParametersToBlocks(values) // Разбиваем значения на блоки
-		if len(blocks) == 2 {                // 1 блок - имя, 2-ой блок - ареал
-			var a Fish          // структура типа Fish
-			a.name = blocks[0]  // Записываем 1-ый блок в имя
-			a.areal = blocks[1] // Записываем 2-ой блок в ариал
-			container.PushBack(a)
-		} else {
-			fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-		}
+func AddFish(container *list.List, matches []string, line string) error {
+	if len(matches) <= 1 {
+		return errors.New("Not enough parameters for")
 	}
+
+	blocks := strings.Split(matches[1], ",")
+
+	if len(blocks) != 2 {
+		return errors.New("Invalid len blocks")
+	}
+
+	var a Fish
+	a.name = blocks[0]
+	a.areal = blocks[1]
+	container.PushBack(a)
+
+	return nil
 }
 
 // Добавление птицы
-func AddBird(container *list.List, matches []string, line string) (err bool) {
-	if len(matches) > 1 {
-		values := matches[1]                 // параметры переданные в функция для структуры Bird
-		blocks := ParametersToBlocks(values) // Разбиваем значения на блоки
-		if len(blocks) == 2 {                // 1 блок - имя, 2-ой блок - скорость
-			var a Bird                                                            // структура типа Bird
-			a.name = blocks[0]                                                    // Записывается имя из блока
-			if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil { // Конвертация string в float64
-				a.speed = StrToFloat // Записываем 2-ой блок в скорость
-			} else {
-				panic(err) // если string не конвертировался в float64
-			}
-			container.PushBack(a) // Добавление в контейнер
-			return true           // Успешно добавился
-		} else {
-			fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-			return false                                   // Ошибка
-		}
-	} else {
-		// fmt.Println("No parameters found", line) // Не найден параметр
-		return false
-	}
-}
-
-func AddInsects(container *list.List, matches []string, line string) (err bool) {
+func AddBird(container *list.List, matches []string, line string) error {
 	if len(matches) <= 1 {
-		fmt.Println("No parameters found", line) // exception
-		return false
+		return errors.New("No parameters found")
 	}
 
-	blocks := ParametersToBlocks(matches[1]) // TODO: use standart function
+	blocks := strings.Split(matches[1], ",")
 
-	if len(blocks) != 3 {
-		fmt.Println("Not enough parameters for", line) // Если внутри скобок не заданы параметры
-		return false
+	if len(blocks) != 2 {
+		return errors.New("Not enough parameters for")
 	}
-	// 1 блок - имя, 2-ой блок - размер, 3 блок - дата обнаружения
-	var a Insects                                                         // структура типа Insects
-	a.name = blocks[0]                                                    // // Записываем 1-ый блок в имя
-	if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil { // Конвертация string в float64
-		a.size = StrToFloat // Записываем 2-ой блок в размеры
+
+	var a Bird
+	a.name = blocks[0]
+
+	if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil {
+		a.speed = StrToFloat
 	} else {
-		panic(err) // если string не конвертировался в float64
-	}
-
-	if checkdate(blocks[2]) { //  readDate ... exception
-		a.date = blocks[2]
-	} else {
-		fmt.Println("Invalid date")
-		return false
+		panic(err)
 	}
 
 	container.PushBack(a)
-	return true
+	return nil
+}
+
+func AddInsects(container *list.List, matches []string, line string) error {
+	if len(matches) <= 1 {
+		return errors.New("No parameters found")
+	}
+
+	blocks := strings.Split(matches[1], ",")
+
+	if len(blocks) != 3 {
+		return errors.New("Not enough parameters for")
+	}
+
+	var a Insects
+	a.name = blocks[0]
+
+	if StrToFloat, err := strconv.ParseFloat(blocks[1], 64); err == nil {
+		a.size = StrToFloat
+	} else {
+		panic(err)
+	}
+
+	t, err := time.Parse("02.01.2006", blocks[2])
+	a.date = t
+	if err != nil {
+		panic(err)
+	}
+
+	container.PushBack(a)
+	return nil
 }
 
 // Функция добавления
